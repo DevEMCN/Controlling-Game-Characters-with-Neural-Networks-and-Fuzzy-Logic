@@ -5,11 +5,13 @@ import java.awt.event.*;
 import javax.swing.*;
 public class GameRunner implements KeyListener{
 	private static final int MAZE_DIMENSION = 100;
-	private static final int IMAGE_COUNT = 14;
+	private static final int IMAGE_COUNT = 15;
 	private GameView view;
 	private Maze model;
 	private int currentRow;
 	private int currentCol;
+	private int currentRowEndNode;
+	private int currentColEndNode;
 	
 	public GameRunner() throws Exception{
 		model = new Maze(MAZE_DIMENSION);
@@ -19,6 +21,7 @@ public class GameRunner implements KeyListener{
     	view.setSprites(sprites);
     	
     	placePlayer();
+    	endNode();
     	
     	Dimension d = new Dimension(GameView.DEFAULT_VIEW_SIZE, GameView.DEFAULT_VIEW_SIZE);
     	view.setPreferredSize(d);
@@ -40,12 +43,21 @@ public class GameRunner implements KeyListener{
     	currentRow = (int) (MAZE_DIMENSION * Math.random());
     	currentCol = (int) (MAZE_DIMENSION * Math.random());
     	model.set(currentRow, currentCol, '5'); //A Spartan warrior is at index 5
+    	
     	updateView(); 		
 	}
+	private void endNode(){   	
+		currentRowEndNode = (int) (MAZE_DIMENSION * Math.random());
+		currentColEndNode = (int) (MAZE_DIMENSION * Math.random());
+    	model.set(currentRowEndNode, currentColEndNode, '>'); 
+    	System.out.println("this is End current row:" +currentRowEndNode+"this is Enddcurrent column"+currentColEndNode);
+	}
+	
 	
 	private void updateView(){
 		view.setCurrentRow(currentRow);
 		view.setCurrentCol(currentCol);
+		System.out.println("this is current row:" +currentRow+"this is current column"+currentCol);
 	}
 
     public void keyPressed(KeyEvent e) {
@@ -98,6 +110,7 @@ public class GameRunner implements KeyListener{
 		sprites[11] = new Sprite("Orange Spider", "resources/orange_spider_1.png", "resources/orange_spider_2.png");
 		sprites[12] = new Sprite("Red Spider", "resources/red_spider_1.png", "resources/red_spider_2.png");
 		sprites[13] = new Sprite("Yellow Spider", "resources/yellow_spider_1.png", "resources/yellow_spider_2.png");
+		sprites[14] = new Sprite("End Game", "resources/EndGame.png");
 		return sprites;
 	}
 	

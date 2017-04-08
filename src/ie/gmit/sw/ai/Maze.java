@@ -13,7 +13,7 @@ public class Maze {
 		addFeature('\u0032', '0', featureNumber); //2 is help, 0 is a hedge
 		addFeature('\u0033', '0', featureNumber); //3 is a bomb, 0 is a hedge
 		addFeature('\u0034', '0', featureNumber); //4 is a hydrogen bomb, 0 is a hedge
-		
+
 		featureNumber = (int)((dimension * dimension) * 0.01);
 		addFeature('\u0036', '0', featureNumber); //6 is a Black Spider, 0 is a hedge
 		addFeature('\u0037', '0', featureNumber); //7 is a Blue Spider, 0 is a hedge
@@ -23,6 +23,8 @@ public class Maze {
 		addFeature('\u003B', '0', featureNumber); //; is a Orange Spider, 0 is a hedge
 		addFeature('\u003C', '0', featureNumber); //< is a Red Spider, 0 is a hedge
 		addFeature('\u003D', '0', featureNumber); //= is a Yellow Spider, 0 is a hedge
+		
+		
 	}
 	
 	private void init(){

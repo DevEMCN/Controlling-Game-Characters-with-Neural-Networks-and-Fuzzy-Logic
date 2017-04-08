@@ -5,7 +5,7 @@ import java.awt.event.*;
 import javax.swing.*;
 public class GameView extends JPanel implements ActionListener{
 	private static final long serialVersionUID = 1L;
-	public static final int DEFAULT_VIEW_SIZE = 800;	
+	public static final int DEFAULT_VIEW_SIZE = 800;
 	private int cellspan = 5;	
 	private int cellpadding = 2;
 	private Maze maze;
@@ -17,7 +17,7 @@ public class GameView extends JPanel implements ActionListener{
 	private boolean zoomOut = false;
 	private int imageIndex = -1;
 	private int offset = 48; //The number 0 is ASCII 48.
-	private Color[] reds = {new Color(255,160,122), new Color(139,0,0), new Color(255, 0, 0)}; //Animate enemy "dots" to make them easier to see
+	//private Color[] reds = {new Color(255,160,122), new Color(139,0,0), new Color(255, 0, 0)}; //Animate enemy "dots" to make them easier to see
 	
 	public GameView(Maze maze) throws Exception{
 		this.maze = maze;
@@ -68,7 +68,7 @@ public class GameView extends JPanel implements ActionListener{
 	        			if (row == currentRow && col == currentCol){
 	        				g2.setColor(Color.YELLOW);
 	        			}else{
-	        				g2.setColor(reds[(int) (Math.random() * 3)]);
+	        		//		g2.setColor(reds[(int) (Math.random() * 3)]);
 	        			}
         				g2.fillRect(x1, y1, size, size);
         			}
