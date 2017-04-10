@@ -5,24 +5,27 @@ import java.awt.event.*;
 import javax.swing.*;
 public class GameRunner implements KeyListener{
 	private static final int MAZE_DIMENSION = 100;
-	private static final int IMAGE_COUNT = 15;
+	private Node[][] model;
 	private GameView view;
-	private Maze model;
 	private int currentRow;
 	private int currentCol;
-	private int currentRowEndNode;
-	private int currentColEndNode;
+	Node goal;
+	Node enemy;
+	Maze m = null;
+	private Node player;
+	private static final int IMAGE_COUNT = 15;
+	
 	
 	public GameRunner() throws Exception{
-		model = new Maze(MAZE_DIMENSION);
-    	view = new GameView(model);
-    	
-    	Sprite[] sprites = getSprites();
+		
+    	m = new Maze(MAZE_DIMENSION);
+		model = m.getMaze();
+		view = new GameView(model);
+		Sprite[] sprites = getSprites();
     	view.setSprites(sprites);
+
     	
-    	placePlayer();
-    	endNode();
-    	
+
     	Dimension d = new Dimension(GameView.DEFAULT_VIEW_SIZE, GameView.DEFAULT_VIEW_SIZE);
     	view.setPreferredSize(d);
     	view.setMinimumSize(d);
@@ -37,21 +40,20 @@ public class GameRunner implements KeyListener{
         f.setLocation(100,100);
         f.pack();
         f.setVisible(true);
+        placePlayer();
+    	//endNode();
 	}
 	
-	private void placePlayer(){   	
-    	currentRow = (int) (MAZE_DIMENSION * Math.random());
-    	currentCol = (int) (MAZE_DIMENSION * Math.random());
-    	model.set(currentRow, currentCol, '5'); //A Spartan warrior is at index 5
-    	
-    	updateView(); 		
+	private void placePlayer(){
+		m.setPlayer();
+		player = m.getPlayer();
+		currentRow = player.getRow();
+		currentCol = player.getCol();
+    	model[currentRow][currentCol].setNodeType(NodeType.PlayerNode);
+    	updateView();
+    		
 	}
-	private void endNode(){   	
-		currentRowEndNode = (int) (MAZE_DIMENSION * Math.random());
-		currentColEndNode = (int) (MAZE_DIMENSION * Math.random());
-    	model.set(currentRowEndNode, currentColEndNode, '>'); 
-    	System.out.println("this is End current row:" +currentRowEndNode+"this is Enddcurrent column"+currentColEndNode);
-	}
+	
 	
 	
 	private void updateView(){
@@ -59,6 +61,7 @@ public class GameRunner implements KeyListener{
 		view.setCurrentCol(currentCol);
 		System.out.println("this is current row:" +currentRow+"this is current column"+currentCol);
 	}
+	
 
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_RIGHT && currentCol < MAZE_DIMENSION - 1) {
@@ -82,15 +85,15 @@ public class GameRunner implements KeyListener{
 
     
 	private boolean isValidMove(int row, int col){
-		if (row <= model.size() - 1 && col <= model.size() - 1 && model.get(row, col) == ' '){
-			model.set(currentRow, currentCol, '\u0020');
-			model.set(row, col, '5');
+		if (row <= model.length - 1 && col <= model[row].length - 1 && (model[row][col].getNodeType() == NodeType.WalkableNode)){
+			model[row][col].setNodeType(NodeType.PlayerNode);
+			model[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+
 			return true;
 		}else{
 			return false; //Can't move
 		}
 	}
-	
 	private Sprite[] getSprites() throws Exception{
 		//Read in the images from the resources directory as sprites. Note that each
 		//sprite will be referenced by its index in the array, e.g. a 3 implies a Bomb...
@@ -113,6 +116,7 @@ public class GameRunner implements KeyListener{
 		sprites[14] = new Sprite("End Game", "resources/EndGame.png");
 		return sprites;
 	}
+	
 	
 	public static void main(String[] args) throws Exception{
 		new GameRunner();
