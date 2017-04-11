@@ -17,19 +17,15 @@ public class Maze {
 		addFeature(NodeType.HelpNode, NodeType.WallNode, featureNumber);
 		addFeature(NodeType.BombNode, NodeType.WallNode, featureNumber);
 		addFeature(NodeType.HydrogenBombNode, NodeType.WallNode, featureNumber);
-		
-
-		
-
 		featureNumber = (int)((dimension * dimension) * 0.01);
-	//	addFeature('\u0036', '0', featureNumber); //6 is a Black Spider, 0 is a hedge
-	//	addFeature('\u0037', '0', featureNumber); //7 is a Blue Spider, 0 is a hedge
-	//	addFeature('\u0038', '0', featureNumber); //8 is a Brown Spider, 0 is a hedge
-	//	addFeature('\u0039', '0', featureNumber); //9 is a Green Spider, 0 is a hedge
-	//	addFeature('\u003A', '0', featureNumber); //: is a Grey Spider, 0 is a hedge
-	//	addFeature('\u003B', '0', featureNumber); //; is a Orange Spider, 0 is a hedge
-	//	addFeature('\u003C', '0', featureNumber); //< is a Red Spider, 0 is a hedge
-	//	addFeature('\u003D', '0', featureNumber); //= is a Yellow Spider, 0 is a hedge
+		addFeature(NodeType.BlackSpider, NodeType.WallNode, featureNumber); //6 is a Black Spider, 0 is a hedge
+		addFeature(NodeType.BlueSpider, NodeType.WallNode, featureNumber); //7 is a Blue Spider, 0 is a hedge
+		addFeature(NodeType.BrownSpider, NodeType.WallNode, featureNumber); //8 is a Brown Spider, 0 is a hedge
+		addFeature(NodeType.GreenSpider, NodeType.WallNode, featureNumber); //9 is a Green Spider, 0 is a hedge
+		addFeature(NodeType.GreySpider, NodeType.WallNode, featureNumber); //: is a Grey Spider, 0 is a hedge
+		addFeature(NodeType.OrangeSpider, NodeType.WallNode, featureNumber); //; is a Orange Spider, 0 is a hedge
+		addFeature(NodeType.RedSpider, NodeType.WallNode, featureNumber); //< is a Red Spider, 0 is a hedge
+		addFeature(NodeType.YellowSpider, NodeType.WallNode, featureNumber); //= is a Yellow Spider, 0 is a hedge
 		
 		
 	}

@@ -77,21 +77,49 @@ public class GameView extends JPanel implements ActionListener{
         			nodeType = maze[currentRow - cellpadding + row][currentCol - cellpadding + col].getNodeType();
         		}
         		
-        		
-  
-        		if (nodeType == NodeType.WallNode) { // x = wallnode
+        		switch (nodeType) {
+				case WallNode:
 					imageIndex = 0;
-				} else if (nodeType == NodeType.SwordNode) {
+					break;
+				case SwordNode:
 					imageIndex = 1;
-				} else if (nodeType == NodeType.BombNode) {
+					break;
+				case BombNode:
 					imageIndex = 3;
-				} else if (nodeType == NodeType.HydrogenBombNode) {
-
+					break;
+				case HydrogenBombNode:
 					imageIndex = 4;
-				} else if (nodeType == NodeType.PlayerNode) {
+					break;
+				case PlayerNode:
 					imageIndex = 5;
-				}else {
+					break;
+				case BlackSpider:
+					imageIndex = 6;
+					break;
+				case BlueSpider:
+					imageIndex = 7;
+					break;
+				case BrownSpider:
+					imageIndex = 8;
+					break;
+				case GreenSpider:
+					imageIndex = 9;
+					break;
+				case GreySpider:
+					imageIndex = 10;
+					break;
+				case OrangeSpider:
+					imageIndex =11;
+					break;
+				case RedSpider:
+					imageIndex = 12;
+					break;
+				case YellowSpider:
+					imageIndex = 13;
+					break;
+				default:
 					imageIndex = -1;
+					break;
 				}
         		if (imageIndex >= 0) {
 					g2.drawImage(sprites[imageIndex].getNext(), x1, y1, null);
