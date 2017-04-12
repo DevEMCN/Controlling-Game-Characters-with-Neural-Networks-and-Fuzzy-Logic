@@ -60,19 +60,57 @@ public class GameView extends JPanel implements ActionListener{
         for(int row = 0; row < cellspan; row++) {
         	for (int col = 0; col < cellspan; col++){  
         		int x1 = col * size;
-        		int y1 = row * size;
-        		
+        		int y1 = row * size;        		
         		NodeType nodeType = maze[row][col].getNodeType();
+        		
        		
         		if (zoomOut){
-        			if (nodeType==NodeType.PlayerNode){
-	        			if (row == currentRow && col == currentCol){
-	        				g2.setColor(Color.YELLOW);
-	        			}else{
-	        		//		g2.setColor(reds[(int) (Math.random() * 3)]);
-	        			}
-        				g2.fillRect(x1, y1, size, size);
-        			}
+        			switch (nodeType) {
+    				case PlayerNode:
+    					g2.setColor(Color.BLACK);
+						g2.fillRect(x1, y1, size, size);
+						g2.drawString("You're Here", x1, y1);
+    					break;
+    				case BlackSpider:
+    					g2.setColor(Color.DARK_GRAY);
+						g2.fillRect(x1, y1, size, size);
+    					break;
+    				case BlueSpider:
+    					g2.setColor(Color.BLUE);
+						g2.fillRect(x1, y1, size, size);
+    					break;
+    				case BrownSpider:
+    					g2.setColor(Color.CYAN);
+						g2.fillRect(x1, y1, size, size);
+    					break;
+    				case GreenSpider:
+    					g2.setColor(Color.GREEN);
+						g2.fillRect(x1, y1, size, size);
+    					break;
+    				case GreySpider:
+    					g2.setColor(Color.GRAY);
+						g2.fillRect(x1, y1, size, size);
+    					break;
+    				case OrangeSpider:
+    					g2.setColor(Color.ORANGE);
+						g2.fillRect(x1, y1, size, size);
+    					break;
+    				case RedSpider:
+    					g2.setColor(Color.RED);
+						g2.fillRect(x1, y1, size, size);
+    					break;
+    				case YellowSpider:
+    					g2.setColor(Color.YELLOW);
+						g2.fillRect(x1, y1, size, size);
+    					break;
+    				case GoalNode:
+    					g2.setColor(Color.BLACK);
+						g2.fillRect(x1, y1, size, size);
+						g2.drawString("EXIT", x1, y1);
+    					break;
+    				default:
+    					break;
+    				}
         		}else{
         			nodeType = maze[currentRow - cellpadding + row][currentCol - cellpadding + col].getNodeType();
         		}
@@ -116,6 +154,9 @@ public class GameView extends JPanel implements ActionListener{
 					break;
 				case YellowSpider:
 					imageIndex = 13;
+					break;
+				case GoalNode:
+					imageIndex = 14;
 					break;
 				default:
 					imageIndex = -1;

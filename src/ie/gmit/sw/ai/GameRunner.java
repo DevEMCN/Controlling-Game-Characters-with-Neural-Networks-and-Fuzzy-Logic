@@ -2,6 +2,9 @@ package ie.gmit.sw.ai;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import javax.swing.*;
 public class GameRunner implements KeyListener{
 	private static final int MAZE_DIMENSION = 100;
@@ -9,6 +12,8 @@ public class GameRunner implements KeyListener{
 	private GameView view;
 	private int currentRow;
 	private int currentCol;
+	private int currentRowGoal;
+	private int currentColGoal;
 	Node goal;
 	Node enemy;
 	Maze m = null;
@@ -17,7 +22,7 @@ public class GameRunner implements KeyListener{
 	
 	
 	public GameRunner() throws Exception{
-		
+		ExecutorService ex = Executors.newCachedThreadPool();
     	m = new Maze(MAZE_DIMENSION);
 		model = m.getMaze();
 		view = new GameView(model);
@@ -41,7 +46,7 @@ public class GameRunner implements KeyListener{
         f.pack();
         f.setVisible(true);
         placePlayer();
-    	//endNode();
+    	endNode();
 	}
 	
 	private void placePlayer(){
@@ -52,6 +57,14 @@ public class GameRunner implements KeyListener{
     	model[currentRow][currentCol].setNodeType(NodeType.PlayerNode);
     	updateView();
     		
+	}
+	private void endNode(){   	
+		m.setGoal();
+		goal = m.getGoal();
+		currentRowGoal = goal.getRow();
+		currentColGoal = goal.getCol();
+    	model[currentRowGoal][currentColGoal].setNodeType(NodeType.GoalNode);
+    	System.out.println(goal);
 	}
 	
 	

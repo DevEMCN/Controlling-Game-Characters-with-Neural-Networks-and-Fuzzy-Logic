@@ -1,12 +1,14 @@
 package ie.gmit.sw.ai;
 import ie.gmit.sw.ai.Node;
-
-
 public class Maze {
 	private int dimension = 100;
 	private Node[][] maze = new Node[dimension][dimension];
 	private Node player;
+	private Node goal;
+	private int col, row ;
 	
+	
+
 	public Maze(int dimension){
 		maze = new Node[dimension][dimension];
 		init();
@@ -88,6 +90,21 @@ public class Maze {
 		}
 		maze[currentRow][currentCol].setNodeType(NodeType.PlayerNode);
 		player = maze[currentRow][currentCol];
+	}
+	public void setGoal() {
+		int currentRow = (int) ((dimension-20) * Math.random());
+		int currentCol = (int) ((dimension-20) * Math.random());
+		
+		while(maze[currentRow][currentCol].getNodeType()!=NodeType.WalkableNode){
+			 currentRow = (int) ((dimension-20) * Math.random());
+			 currentCol = (int) ((dimension-20) * Math.random());
+		}
+		maze[currentRow][currentCol].setNodeType(NodeType.GoalNode);
+		goal = maze[currentRow][currentCol];		
+	}
+
+	public Node getGoal() {
+		return goal;
 	}
 	
 	public String toString(){
