@@ -4,8 +4,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import ie.gmit.sw.ai.Node;
+import ie.gmit.sw.ai.NodeType;
+
 public class TraversatorStats {
 	private static List<Node> paths = new ArrayList<Node>();
 	public static double depth = 0;

@@ -50,4 +50,28 @@ public class HuntAndKillMazeGenerator extends AbstractMazeGenerator {
 		}
 		return null;
 	}
+
+	@Override
+	public void setGoal() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Node getGoal() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setPlayer() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Node getPlayer() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

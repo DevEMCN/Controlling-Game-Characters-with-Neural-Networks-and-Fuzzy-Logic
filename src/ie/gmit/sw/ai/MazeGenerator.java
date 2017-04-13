@@ -3,8 +3,10 @@ package ie.gmit.sw.ai;
 public interface MazeGenerator {
 	public enum GeneratorAlgorithm {HuntAndKill};
 	
-	public abstract void setGoalNode();
-	public abstract Node getGoalNode();
-	public abstract Node[][] getMaze();
-	public abstract void generateMaze();
+	public   void setGoal();
+	public   Node getGoal();
+	public   void setPlayer();
+	public   Node getPlayer();
+	public   Node[][] getMaze();
+	public   void generateMaze();
 }

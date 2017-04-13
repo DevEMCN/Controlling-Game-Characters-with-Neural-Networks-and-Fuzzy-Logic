@@ -8,12 +8,13 @@ import java.util.concurrent.Executors;
 import javax.swing.*;
 public class GameRunner implements KeyListener{
 	private static final int MAZE_DIMENSION = 100;
-	private Node[][] model;
+	private Node[][] maze;
 	private GameView view;
 	private int currentRow;
 	private int currentCol;
 	private int currentRowGoal;
 	private int currentColGoal;
+	private int swordCounter, bombCounter, hbombCounter ;
 	Node goal;
 	Node enemy;
 	Maze m = null;
@@ -24,8 +25,8 @@ public class GameRunner implements KeyListener{
 	public GameRunner() throws Exception{
 		ExecutorService ex = Executors.newCachedThreadPool();
     	m = new Maze(MAZE_DIMENSION);
-		model = m.getMaze();
-		view = new GameView(model);
+		maze = m.getMaze();
+		view = new GameView(maze);
 		Sprite[] sprites = getSprites();
     	view.setSprites(sprites);
 
@@ -54,7 +55,7 @@ public class GameRunner implements KeyListener{
 		player = m.getPlayer();
 		currentRow = player.getRow();
 		currentCol = player.getCol();
-    	model[currentRow][currentCol].setNodeType(NodeType.PlayerNode);
+    	maze[currentRow][currentCol].setNodeType(NodeType.PlayerNode);
     	updateView();
     		
 	}
@@ -63,7 +64,7 @@ public class GameRunner implements KeyListener{
 		goal = m.getGoal();
 		currentRowGoal = goal.getRow();
 		currentColGoal = goal.getCol();
-    	model[currentRowGoal][currentColGoal].setNodeType(NodeType.GoalNode);
+    	maze[currentRowGoal][currentColGoal].setNodeType(NodeType.GoalNode);
     	System.out.println(goal);
 	}
 	
@@ -97,17 +98,36 @@ public class GameRunner implements KeyListener{
 	public void keyTyped(KeyEvent e) {} //Ignore
 
     
-	private boolean isValidMove(int row, int col){
-		if (row <= model.length - 1 && col <= model[row].length - 1 && (model[row][col].getNodeType() == NodeType.WalkableNode)){
-			model[row][col].setNodeType(NodeType.PlayerNode);
-			model[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+private boolean isValidMove(int row, int col) {
+		
+
+		if (row <= maze.length - 1 && col <= maze[row].length - 1 && maze[row][col].getNodeType() == NodeType.WalkableNode){
+			maze[row][col].setNodeType(NodeType.PlayerNode);
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
 
 			return true;
-		}else{
-			return false; //Can't move
+		}
+		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BombNode){
+			maze[row][col].setNodeType(NodeType.WallNode);
+			bombCounter++;
+			return false;
+		} else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.HydrogenBombNode){
+			maze[row][col].setNodeType(NodeType.WallNode);
+			hbombCounter++;
+			return false;
+		}  
+		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.SwordNode){
+			maze[row][col].setNodeType(NodeType.WallNode);
+			swordCounter++;
+			return false;
+		} else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GoalNode){
+			System.exit(0);
+			return true;
+		}else {
+			return false; 
 		}
 	}
-	private Sprite[] getSprites() throws Exception{
+	private Sprite[] getSprites() throws Exception{	
 		//Read in the images from the resources directory as sprites. Note that each
 		//sprite will be referenced by its index in the array, e.g. a 3 implies a Bomb...
 		//Ideally, the array should dynamically created from the images... 
