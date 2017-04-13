@@ -1,32 +1,33 @@
 package ie.gmit.sw.ai;
 
-import ie.gmit.sw.ai.*;
+
 import java.util.*;
 public class AStarTraversator implements Traversator{
 	private Node goal;
 	
 	public AStarTraversator(Node goal){
 		this.goal = goal;
+		System.out.println(goal);
 	}
 	
 	public void traverse(Node[][] maze, Node node) {
         long time = System.currentTimeMillis();
     	int visitCount = 0;
     	
-		PriorityQueue<Node> open = new PriorityQueue<Node>(20, (Node current, Node next)-> (current.getPathCost() + current.getHeuristic(goal)) + (next.getPathCost() + next.getHeuristic(goal)));
+		PriorityQueue<Node> open = new PriorityQueue<Node>(20, (Node current, Node next)-> (current.getPathCost() + current.getHeuristic(goal)) - (next.getPathCost() + next.getHeuristic(goal)));
 		java.util.List<Node> closed = new ArrayList<Node>();
     	   	
 		open.offer(node);
 		node.setPathCost(0);		
-		while(!open.isEmpty()){//this condition guarantees that if a path exists to the goal node we will find it...
-			node = open.poll();	//get the lowest f(n) from the queue
+		while(!open.isEmpty()){
+			node = open.poll();		
 			closed.add(node);
 			node.setVisited(true);	
 			visitCount++;
 			
 			if (node.isGoalNode()){
 		        time = System.currentTimeMillis() - time; //Stop the clock
-		        System.out.println("got it ");
+		        TraversatorStats.printStats(node, time, visitCount);
 				break;
 			}
 			
@@ -46,10 +47,10 @@ public class AStarTraversator implements Traversator{
 				if ((open.contains(child) || closed.contains(child)) && existing < score){
 					continue;
 				}else{
-					open.remove(child);// remove this child because the F(n) will change 
+					open.remove(child);
 					closed.remove(child);
-					child.setParent(node);//switch parent if on better path 
-					child.setPathCost(node.getPathCost() + 1);//update the path cost to a better value
+					child.setParent(node);
+					child.setPathCost(node.getPathCost() + 1);
 					open.add(child);
 				}
 			}									

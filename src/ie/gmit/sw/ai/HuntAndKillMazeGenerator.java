@@ -1,5 +1,6 @@
 package ie.gmit.sw.ai;
 
+
 import ie.gmit.sw.ai.Node.Direction;
 
 import java.util.Random;

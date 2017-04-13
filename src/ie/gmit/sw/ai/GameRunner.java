@@ -3,7 +3,7 @@ package ie.gmit.sw.ai;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import ie.gmit.sw.ai.fuzzylogic;
 
 import javax.swing.*;
 public class GameRunner implements KeyListener{
@@ -14,21 +14,23 @@ public class GameRunner implements KeyListener{
 	private int currentCol;
 	private int currentRowGoal;
 	private int currentColGoal;
-	private int swordCounter, bombCounter, hbombCounter ;
+	private double Weaponstrength;
+	private double playerStrenght=100;
+	private double spiderStrenght=25;
+	fuzzylogic fuzz = new fuzzylogic();
 	Node goal;
-	Node enemy;
 	Maze m = null;
 	private Node player;
 	private static final int IMAGE_COUNT = 15;
 	
 	
 	public GameRunner() throws Exception{
-		ExecutorService ex = Executors.newCachedThreadPool();
     	m = new Maze(MAZE_DIMENSION);
 		maze = m.getMaze();
 		view = new GameView(maze);
 		Sprite[] sprites = getSprites();
     	view.setSprites(sprites);
+    	
 
     	
 
@@ -73,7 +75,7 @@ public class GameRunner implements KeyListener{
 	private void updateView(){
 		view.setCurrentRow(currentRow);
 		view.setCurrentCol(currentCol);
-		System.out.println("this is current row:" +currentRow+"this is current column"+currentCol);
+		System.out.println("weapon Strength"+Weaponstrength);
 	}
 	
 
@@ -96,8 +98,7 @@ public class GameRunner implements KeyListener{
     }
     public void keyReleased(KeyEvent e) {} //Ignore
 	public void keyTyped(KeyEvent e) {} //Ignore
-
-    
+	
 private boolean isValidMove(int row, int col) {
 		
 
@@ -109,18 +110,22 @@ private boolean isValidMove(int row, int col) {
 		}
 		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BombNode){
 			maze[row][col].setNodeType(NodeType.WallNode);
-			bombCounter++;
+			Weaponstrength+=3;
 			return false;
 		} else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.HydrogenBombNode){
 			maze[row][col].setNodeType(NodeType.WallNode);
-			hbombCounter++;
+			Weaponstrength+=5;
 			return false;
 		}  
-		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.SwordNode){
-			maze[row][col].setNodeType(NodeType.WallNode);
-			swordCounter++;
+		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BlackSpider){
+			maze[row][col].setNodeType(NodeType.WalkableNode);
+			fuzz.fight(Weaponstrength,playerStrenght,spiderStrenght);
 			return false;
-		} else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GoalNode){
+		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.SwordNode){
+			maze[row][col].setNodeType(NodeType.WallNode);
+			Weaponstrength++;
+			return false;
+		}  else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GoalNode){
 			System.exit(0);
 			return true;
 		}else {
