@@ -73,10 +73,26 @@ public class Node {
 	public Node[] adjacentNodes(Node[][] maze){
 		java.util.List<Node> adjacents = new java.util.ArrayList<Node>();
 		
-		if (row > 0) adjacents.add(maze[row - 1][col]); //Add North
-		if (row < maze.length - 1) adjacents.add(maze[row + 1][col]); //Add South
-		if (col > 0) adjacents.add(maze[row][col - 1]); //Add West
-		if (col < maze[row].length - 1) adjacents.add(maze[row][col + 1]); //Add East
+//		if (row > 0) adjacents.add(maze[row - 1][col]); //Add North
+//		if (row < maze.length - 1) adjacents.add(maze[row + 1][col]); //Add South
+//		if (col > 0) adjacents.add(maze[row][col - 1]); //Add West
+//		if (col < maze[row].length - 1) adjacents.add(maze[row][col + 1]); //Add East
+		if (row > 0)
+			if(maze[row-1][col].getTag() != 0){
+				adjacents.add(maze[row - 1][col]); //Add North
+			}
+		if (row < maze.length - 1) 
+			if(maze[row+1][col].getTag() != 0){
+				adjacents.add(maze[row + 1][col]); //Add South
+			}
+		if (col > 0) 
+			if(maze[row][col-1].getTag() != 0){
+				adjacents.add(maze[row][col - 1]); //Add West
+			}
+		if (col < maze[row].length - 1) 
+			if(maze[row][col+1].getTag() != 0){
+				adjacents.add(maze[row][col + 1]); //Add East
+			}
 		
 		return (Node[]) adjacents.toArray(new Node[adjacents.size()]);
 	}

@@ -1,5 +1,6 @@
 package ie.gmit.sw.ai;
 
+import ie.gmit.sw.ai.sprites.Spider;
 
 public class Maze {
 	//private char[][] maze;
@@ -62,6 +63,11 @@ public class Maze {
 			//if (maze[row][col] == replace){
 			if (maze[row][col].getTag() == replace){
 				//maze[row][col] = feature;
+				
+				if(feature > 5){
+					maze[row][col] = new Spider(row, col, feature);
+				}
+				
 				maze[row][col].setTag(feature);
 				counter++;
 			}
