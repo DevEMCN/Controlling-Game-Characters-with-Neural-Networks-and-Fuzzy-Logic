@@ -1,5 +1,7 @@
 package ie.gmit.sw.ai;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ie.gmit.sw.ai.Node;
 import ie.gmit.sw.ai.NodeType;
@@ -9,10 +11,10 @@ public class Maze {
 	private Node player;
 	private Node goal;
 	private int col, row ;
-	
+	ExecutorService ex = Executors.newCachedThreadPool();
 	
 
-	public Maze(int dimension){
+	public Maze(int dimension) throws InterruptedException{
 		maze = new Node[dimension][dimension];
 		init();
 		buildMaze();
@@ -20,12 +22,11 @@ public class Maze {
 		buildPath();
 		
 		
-		int featureNumber = (int)((dimension * dimension) * 0.01);
+		int featureNumber = 20;
 		addFeature(NodeType.SwordNode, NodeType.WallNode, featureNumber);
 		addFeature(NodeType.HelpNode, NodeType.WallNode, featureNumber);
 		addFeature(NodeType.BombNode, NodeType.WallNode, featureNumber);
 		addFeature(NodeType.HydrogenBombNode, NodeType.WallNode, featureNumber);
-		featureNumber = (int)((dimension * dimension) * 0.01);
 		addFeature(NodeType.BlackSpider, NodeType.WallNode, featureNumber); //6 is a Black Spider, 0 is a hedge
 		addFeature(NodeType.BlueSpider, NodeType.WallNode, featureNumber); //7 is a Blue Spider, 0 is a hedge
 		addFeature(NodeType.BrownSpider, NodeType.WallNode, featureNumber); //8 is a Brown Spider, 0 is a hedge
@@ -74,7 +75,7 @@ public class Maze {
 		}
 	}
 	
-	private void addFeature(NodeType feature, NodeType replace, int number){
+	private void addFeature(NodeType feature, NodeType replace, int number) throws InterruptedException{
 		int counter = 0;
 		while (counter < number){
 			int row = (int) (maze.length * Math.random());
@@ -82,6 +83,11 @@ public class Maze {
 			
 			if (maze[row][col].nodeType == replace){
 				maze[row][col].nodeType = feature;
+				if(feature==NodeType.BlackSpider || feature==NodeType.BlueSpider || feature==NodeType.BrownSpider
+						|| feature==NodeType.OrangeSpider || feature==NodeType.GreySpider || feature==NodeType.GreenSpider
+						|| feature==NodeType.RedSpider || feature==NodeType.YellowSpider){
+				ex.execute(new Spiders(maze, player,feature));
+				}
 				counter++;
 			}
 		}

@@ -6,10 +6,12 @@ public class DepthLimitedDFSTraversator implements Traversator{
 	private long time = System.currentTimeMillis();
 	private int visitCount = 0;
 	private Spiders goalNode;
+	private NodeType nodeType;
 	
-	public DepthLimitedDFSTraversator(int limit, Spiders goalNode){
+	public DepthLimitedDFSTraversator(int limit, Spiders goalNode, NodeType nodeType){
 		this.limit = limit;
 		this.goalNode=goalNode;
+		this.nodeType=nodeType;
 	}
 	
 	public void traverse(Node[][] maze, Node node) throws InterruptedException {
@@ -37,12 +39,12 @@ if (children[i] != null && !children[i].isVisited()) {
 				
 				if (node.getNodeType() == NodeType.WalkableNode|| node.getNodeType() == NodeType.PlayerNode) {
 					goalNode.updatePath(node.getRow(), node.getCol());
-					maze[node.getRow()][node.getCol()].setNodeType(NodeType.YellowSpider);
+					maze[node.getRow()][node.getCol()].setNodeType(nodeType);
 					Thread.sleep(3000);
 				}else if (node.getRow() <= maze.length - 1 && node.getCol() <= maze[node.getRow()].length - 1
 						&& (maze[node.getRow()][node.getCol()].getNodeType() == NodeType.PlayerNode)) {
 					goalNode.updatePath(node.getRow() - 1, node.getCol() - 1);
-					maze[node.getRow() - 1][node.getCol() - 1].setNodeType(NodeType.YellowSpider);
+					maze[node.getRow() - 1][node.getCol() - 1].setNodeType(nodeType);
 				}
 				children[i].setParent(node);
 				dfs(children[i], depth + 1);

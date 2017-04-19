@@ -64,11 +64,10 @@ public class GameRunner implements KeyListener{
     	updateView();
     		
 	}
+
 	private void spawnEnemies() throws InterruptedException {
-		test=NodeType.BlackSpider;
-		for (int i = 0; i < 10; i++) {
-			ex.execute(new Spiders(maze, player));
-		}
+		
+		
 	}
 	private void constantPathUpdate() {
 		goal = m.getGoal();
@@ -150,50 +149,51 @@ private boolean isValidMove(int row, int col) {
 		}  
 		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BlackSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);	
-			fuzz.fight(Weaponstrength,playerStrenght,10);
+			fuzz.fight(Weaponstrength,playerStrenght,30);
 			constantPathUpdate();
 			return true;
 		}
 		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BlueSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
-			fuzz.fight(Weaponstrength,playerStrenght,9);
+			fuzz.fight(Weaponstrength,playerStrenght,27);
 			constantPathUpdate();
 			return true;
 		}
 		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BrownSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
-			fuzz.fight(Weaponstrength,playerStrenght,8);
+			fuzz.fight(Weaponstrength,playerStrenght,25);
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GreenSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
-			fuzz.fight(Weaponstrength,playerStrenght,7);
+			fuzz.fight(Weaponstrength,playerStrenght,22);
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GreySpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
-			fuzz.fight(Weaponstrength,playerStrenght,6);
+			fuzz.fight(Weaponstrength,playerStrenght,18);
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.OrangeSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
-			fuzz.fight(Weaponstrength,playerStrenght,5);
+			fuzz.fight(Weaponstrength,playerStrenght,15);
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.RedSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
-			fuzz.fight(Weaponstrength,playerStrenght,4);
+			fuzz.fight(Weaponstrength,playerStrenght,12);
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.YellowSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
-			fuzz.fight(Weaponstrength,playerStrenght,3);
+			fuzz.fight(Weaponstrength,playerStrenght,8);
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.SwordNode){
-			maze[currentRow][currentCol].setNodeType(NodeType.WallNode);
+			maze[row][col].setNodeType(NodeType.WallNode);
 			Weaponstrength++;
-			return true;
+			constantPathUpdate();
+			return false;
 		}  else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GoalNode){
 			System.exit(0);
 			return true;
