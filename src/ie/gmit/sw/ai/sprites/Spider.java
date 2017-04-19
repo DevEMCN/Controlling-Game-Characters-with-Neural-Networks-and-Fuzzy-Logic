@@ -33,14 +33,8 @@ public class Spider extends Node {
 		}
 	}
 	
-	public Spider(Node[][] maze, Node goal) {
-		this.maze = maze;
-		this.goal = goal;
-		// TODO Auto-generated constructor stub
-		
-		
-		
-		
+	public Spider(int row, int col, int feature) {
+		super(row, col, feature);
 	}
 
 }
