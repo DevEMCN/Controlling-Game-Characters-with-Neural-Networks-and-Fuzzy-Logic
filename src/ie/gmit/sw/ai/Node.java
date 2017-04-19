@@ -11,12 +11,22 @@ public class Node {
 	private int row = -1;
 	private int col = -1;
 	private int distance;
+	private int tag; 
 	
-	public Node(int row, int col) {
+	public Node(int row, int col, int tag) {
 		this.row = row;
 		this.col = col;
+		this.tag = tag;
 	}
-
+	
+	public int getTag()
+	{
+		return this.tag;
+	}
+	
+	public void setTag(int tag){
+		this.tag = tag;
+	}
 	public int getRow() {
 		return row;
 	}

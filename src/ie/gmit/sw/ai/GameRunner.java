@@ -12,8 +12,8 @@ public class GameRunner implements KeyListener{
 	private Maze model;
 	private int currentRow;
 	private int currentCol;
-	private int currentRowEndNode;
-	private int currentColEndNode;
+	//private int currentRowEndNode;
+	//private int currentColEndNode;
 	
 	public GameRunner() throws Exception{
 		model = new Maze(MAZE_DIMENSION);
@@ -23,7 +23,7 @@ public class GameRunner implements KeyListener{
     	view.setSprites(sprites);
     	
     	placePlayer();
-    	endNode();
+    	//endNode();
     	
     	Dimension d = new Dimension(GameView.DEFAULT_VIEW_SIZE, GameView.DEFAULT_VIEW_SIZE);
     	view.setPreferredSize(d);
@@ -44,16 +44,17 @@ public class GameRunner implements KeyListener{
 	private void placePlayer(){   	
     	currentRow = (int) (MAZE_DIMENSION * Math.random());
     	currentCol = (int) (MAZE_DIMENSION * Math.random());
-    	model.set(currentRow, currentCol, '5'); //A Spartan warrior is at index 5
+    	//model.set(currentRow, currentCol, '5'); //A Spartan warrior is at index 5
+    	model.set(currentRow, currentCol, new Node(currentRow, currentCol, 5));
     	
     	updateView(); 		
 	}
-	private void endNode(){   	
-		currentRowEndNode = (int) (MAZE_DIMENSION * Math.random());
-		currentColEndNode = (int) (MAZE_DIMENSION * Math.random());
-    	model.set(currentRowEndNode, currentColEndNode, '>'); 
-    	System.out.println("this is End current row:" +currentRowEndNode+"this is Enddcurrent column"+currentColEndNode);
-	}
+//	private void endNode(){   	
+//		currentRowEndNode = (int) (MAZE_DIMENSION * Math.random());
+//		currentColEndNode = (int) (MAZE_DIMENSION * Math.random());
+//    	model.set(currentRowEndNode, currentColEndNode, '>'); 
+//    	System.out.println("this is End current row:" +currentRowEndNode+"this is Enddcurrent column"+currentColEndNode);
+//	}
 	
 	
 	private void updateView(){
@@ -84,9 +85,11 @@ public class GameRunner implements KeyListener{
 
     
 	private boolean isValidMove(int row, int col){
-		if (row <= model.size() - 1 && col <= model.size() - 1 && model.get(row, col) == ' '){
-			model.set(currentRow, currentCol, '\u0020');
-			model.set(row, col, '5');
+		//if (row <= model.size() - 1 && col <= model.size() - 1 && model.get(row, col) == ' '){
+		if (row <= model.size() - 1 && col <= model.size() - 1 && model.get(row, col).getTag() == -1){
+			//model.set(currentRow, currentCol, '\u0020');
+			model.set(currentRow, currentCol, new Node(row, col, -1));
+			model.set(row, col, new Node(row, col, 5));
 			return true;
 		}else{
 			return false; //Can't move
