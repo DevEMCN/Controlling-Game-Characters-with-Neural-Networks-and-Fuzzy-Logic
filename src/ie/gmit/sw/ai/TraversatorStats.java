@@ -1,19 +1,39 @@
 package ie.gmit.sw.ai;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import ie.gmit.sw.ai.Node;
+import ie.gmit.sw.ai.NodeType;
 public class TraversatorStats {
-	public static void printStats(Node node, long time, int visitCount){
-		double depth = 0;
-		
-		while (node != null){			
+	private static List<Node> paths = new ArrayList<Node>();
+	public static double depth = 0;
+	public static double playerDepth = 0;
+
+	public static void printStats(Node node, long time, int visitCount) {
+
+		depth = 0;
+		playerDepth = 0;
+		paths.clear();
+		while (node != null) {
 			node = node.getParent();
-			if (node != null) node.setColor(Color.YELLOW);
-			depth++;			
+			
+			paths.add(node);
+			if (node != null  && node.getNodeType()!=NodeType.PlayerNode) {
+				node.setColor(Color.yellow);
+			}
+			depth++;
+			playerDepth++;
 		}
-		
-        System.out.println("Visited " + visitCount + " nodes in " + time + "ms.");
-        System.out.println("Found goal at a depth of " + String.format("%.0f", depth));
-        System.out.println("EBF = B* = k^(1/d) = " + String.format("%.2f", Math.pow((double) visitCount, (1.00d / depth))));           
+		System.out.println("Visited " + visitCount + " nodes in " + time + "ms.");
+		System.out.println("Found goal at a depth of " + String.format("%.0f", depth));
+		System.out.println("EBF = B* = k^(1/d) = " + String.format("%.2f", Math.pow(visitCount, (1.00d / depth))));
+	}
+
+	public static List<Node> getPaths() {
+		Collections.reverse(paths);
+		return paths;
 	}
 }

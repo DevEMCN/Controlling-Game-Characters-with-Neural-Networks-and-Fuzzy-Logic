@@ -1,5 +1,8 @@
 package ie.gmit.sw.ai;
+import java.util.Random;
+
 import ie.gmit.sw.ai.Node;
+import ie.gmit.sw.ai.NodeType;
 public class Maze {
 	private int dimension = 100;
 	private Node[][] maze = new Node[dimension][dimension];
@@ -13,6 +16,9 @@ public class Maze {
 		maze = new Node[dimension][dimension];
 		init();
 		buildMaze();
+		setGoal();
+		buildPath();
+		
 		
 		int featureNumber = (int)((dimension * dimension) * 0.01);
 		addFeature(NodeType.SwordNode, NodeType.WallNode, featureNumber);
@@ -30,6 +36,33 @@ public class Maze {
 		addFeature(NodeType.YellowSpider, NodeType.WallNode, featureNumber); //= is a Yellow Spider, 0 is a hedge
 		
 		
+	}
+	private void buildPath() {
+		for (int row = 0; row < maze.length; row++) {
+			for (int col = 0; col < maze[row].length; col++) {
+				if (col < maze[row].length - 1) {
+					if (maze[row][col + 1].getNodeType() == NodeType.WalkableNode) {
+						maze[row][col].addPath(Node.Direction.West);
+					}
+				}
+				if (col > 0) {
+					if (maze[row][col - 1].getNodeType() == NodeType.WalkableNode) {
+						maze[row][col].addPath(Node.Direction.East);
+					}
+				}
+				if (row < maze.length - 1) {
+					if (maze[row + 1][col].getNodeType() == NodeType.WalkableNode) {
+						maze[row][col].addPath(Node.Direction.North);
+					}
+				}
+				if (row > 0) {
+					if (maze[row - 1][col].getNodeType() == NodeType.WalkableNode) {
+						maze[row][col].addPath(Node.Direction.South);
+					}
+				}
+			}
+		}
+
 	}
 	
 	private void init(){
@@ -92,15 +125,18 @@ public class Maze {
 		player = maze[currentRow][currentCol];
 	}
 	public void setGoal() {
-		int currentRow = (int) ((dimension-20) * Math.random());
-		int currentCol = (int) ((dimension-20) * Math.random());
-		
-		while(maze[currentRow][currentCol].getNodeType()!=NodeType.WalkableNode){
-			 currentRow = (int) ((dimension-20) * Math.random());
-			 currentCol = (int) ((dimension-20) * Math.random());
+		Random ran = new Random();
+		for (int i = 0; i < 1; i++) {
+			int currentRow = ran.nextInt(dimension-10) + 10;
+			int currentCol = ran.nextInt(dimension-10) + 10;
+			while(maze[currentRow][currentCol].getNodeType()!=NodeType.WalkableNode || 
+					maze[currentRow][currentCol].getNodeType()==NodeType.PlayerNode){
+				 currentRow = ran.nextInt(dimension-10) + 10;
+				 currentCol = ran.nextInt(dimension-10) + 10;
+			}
+			this.getMaze()[currentRow][currentCol].setNodeType(NodeType.GoalNode);
+			goal = this.getMaze()[currentRow][currentCol];
 		}
-		maze[currentRow][currentCol].setNodeType(NodeType.GoalNode);
-		goal = maze[currentRow][currentCol];		
 	}
 
 	public Node getGoal() {

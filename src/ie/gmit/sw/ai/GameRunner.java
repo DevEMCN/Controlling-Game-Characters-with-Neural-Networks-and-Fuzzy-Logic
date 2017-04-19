@@ -2,9 +2,11 @@ package ie.gmit.sw.ai;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.management.MemoryType;
 import java.util.concurrent.ExecutorService;
-import ie.gmit.sw.ai.fuzzylogic;
+import java.util.concurrent.Executors;
 
+import ie.gmit.sw.ai.fuzzylogic;
 import javax.swing.*;
 public class GameRunner implements KeyListener{
 	private static final int MAZE_DIMENSION = 100;
@@ -12,22 +14,21 @@ public class GameRunner implements KeyListener{
 	private GameView view;
 	private int currentRow;
 	private int currentCol;
-	private int currentRowGoal;
-	private int currentColGoal;
 	private double Weaponstrength;
 	private double playerStrenght=100;
-	private double spiderStrenght=25;
 	fuzzylogic fuzz = new fuzzylogic();
 	Node goal;
 	Maze m = null;
+	private NodeType test;
 	private Node player;
 	private static final int IMAGE_COUNT = 15;
-	
+	ExecutorService ex = Executors.newCachedThreadPool();
+	Traversator playerPath;
 	
 	public GameRunner() throws Exception{
     	m = new Maze(MAZE_DIMENSION);
 		maze = m.getMaze();
-		view = new GameView(maze);
+		view = new GameView(maze,player);
 		Sprite[] sprites = getSprites();
     	view.setSprites(sprites);
     	
@@ -48,8 +49,10 @@ public class GameRunner implements KeyListener{
         f.setLocation(100,100);
         f.pack();
         f.setVisible(true);
+        spawnEnemies();
         placePlayer();
-    	endNode();
+        endNode();
+    	validatePath();
 	}
 	
 	private void placePlayer(){
@@ -61,16 +64,42 @@ public class GameRunner implements KeyListener{
     	updateView();
     		
 	}
-	private void endNode(){   	
-		m.setGoal();
+	private void spawnEnemies() throws InterruptedException {
+		test=NodeType.BlackSpider;
+		for (int i = 0; i < 10; i++) {
+			ex.execute(new Spiders(maze, player));
+		}
+	}
+	private void constantPathUpdate() {
 		goal = m.getGoal();
-		currentRowGoal = goal.getRow();
-		currentColGoal = goal.getCol();
-    	maze[currentRowGoal][currentColGoal].setNodeType(NodeType.GoalNode);
-    	System.out.println(goal);
+		AStarTraversator update = new AStarTraversator(goal);
+		update.traverse(maze, maze[currentRow][currentCol]);
+
+	}
+	private void endNode(){   	
+		this.goal = m.getGoal();
+		this.goal.setGoalNode(true);
 	}
 	
-	
+	private void validatePath() throws InterruptedException {
+		int checker = (int) TraversatorStats.depth;
+		if (checker == 0) {
+			goal.setNodeType(NodeType.WalkableNode);
+		}
+		while (checker < 20) {
+			m.setGoal();
+			goal.setNodeType(NodeType.WalkableNode);
+			goal = m.getGoal();
+			System.out.println("recalculating the path...");
+			Traversator playerPath = new AStarTraversator(goal);
+			playerPath.traverse(maze, maze[player.getRow()][player.getCol()]);
+			System.out.println("finished calculating...");
+			checker = (int) TraversatorStats.depth;
+			if (checker > 20) {
+				break;
+			}
+		}
+	}
 	
 	private void updateView(){
 		view.setCurrentRow(currentRow);
@@ -105,26 +134,66 @@ private boolean isValidMove(int row, int col) {
 		if (row <= maze.length - 1 && col <= maze[row].length - 1 && maze[row][col].getNodeType() == NodeType.WalkableNode){
 			maze[row][col].setNodeType(NodeType.PlayerNode);
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
-
+			constantPathUpdate();
 			return true;
 		}
 		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BombNode){
 			maze[row][col].setNodeType(NodeType.WallNode);
 			Weaponstrength+=3;
+			constantPathUpdate();
 			return false;
 		} else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.HydrogenBombNode){
 			maze[row][col].setNodeType(NodeType.WallNode);
 			Weaponstrength+=5;
+			constantPathUpdate();
 			return false;
 		}  
 		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BlackSpider){
-			maze[row][col].setNodeType(NodeType.WalkableNode);
-			fuzz.fight(Weaponstrength,playerStrenght,spiderStrenght);
-			return false;
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);	
+			fuzz.fight(Weaponstrength,playerStrenght,10);
+			constantPathUpdate();
+			return true;
+		}
+		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BlueSpider){
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+			fuzz.fight(Weaponstrength,playerStrenght,9);
+			constantPathUpdate();
+			return true;
+		}
+		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BrownSpider){
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+			fuzz.fight(Weaponstrength,playerStrenght,8);
+			constantPathUpdate();
+			return true;
+		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GreenSpider){
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+			fuzz.fight(Weaponstrength,playerStrenght,7);
+			constantPathUpdate();
+			return true;
+		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GreySpider){
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+			fuzz.fight(Weaponstrength,playerStrenght,6);
+			constantPathUpdate();
+			return true;
+		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.OrangeSpider){
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+			fuzz.fight(Weaponstrength,playerStrenght,5);
+			constantPathUpdate();
+			return true;
+		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.RedSpider){
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+			fuzz.fight(Weaponstrength,playerStrenght,4);
+			constantPathUpdate();
+			return true;
+		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.YellowSpider){
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+			fuzz.fight(Weaponstrength,playerStrenght,3);
+			constantPathUpdate();
+			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.SwordNode){
-			maze[row][col].setNodeType(NodeType.WallNode);
+			maze[currentRow][currentCol].setNodeType(NodeType.WallNode);
 			Weaponstrength++;
-			return false;
+			return true;
 		}  else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GoalNode){
 			System.exit(0);
 			return true;

@@ -54,7 +54,9 @@ public class Node {
 
 	
 	public boolean hasDirection(Direction direction){	
-		if(paths!=null){
+		if (paths == null){
+			return false;
+		}else if(paths!=null){
 			if(paths.length>0){
 				for (int i = 0; i < paths.length; i++) {
 					if (paths[i] == direction) return true;

@@ -2,10 +2,14 @@ package ie.gmit.sw.ai;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import javax.swing.*;
 
 import ie.gmit.sw.ai.Node;
 import ie.gmit.sw.ai.NodeType;
+import ie.gmit.sw.ai.Node.Direction;
 public class GameView extends JPanel implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	public static final int DEFAULT_VIEW_SIZE = 800;
@@ -14,15 +18,17 @@ public class GameView extends JPanel implements ActionListener{
 	private Node[][] maze;
 	private Sprite[] sprites;
 	private int enemy_state = 5;
+	private Node player;
 	private Timer timer;
 	private int currentRow;
 	private int currentCol;
 	private boolean zoomOut = false;
 	private int imageIndex = -1;
 	private Color[] reds = {new Color(255,160,122), new Color(139,0,0), new Color(255, 0, 0)}; //Animate enemy "dots" to make them easier to see
-	
-	public GameView(Node[][] maze) throws Exception{
+	ExecutorService es = Executors.newCachedThreadPool();
+	public GameView(Node[][] maze, Node player) throws Exception{
 		this.maze = maze;
+		this.player=player;
 		setBackground(Color.LIGHT_GRAY);
 		setDoubleBuffered(true);
 		timer = new Timer(300, this);
@@ -52,18 +58,18 @@ public class GameView extends JPanel implements ActionListener{
 	public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
-              
+           int counter = 0;   
         cellspan = zoomOut ? maze.length : 5;         
         final int size = DEFAULT_VIEW_SIZE/cellspan;
         g2.drawRect(0, 0, GameView.DEFAULT_VIEW_SIZE, GameView.DEFAULT_VIEW_SIZE);
-        
         for(int row = 0; row < cellspan; row++) {
         	for (int col = 0; col < cellspan; col++){  
         		int x1 = col * size;
-        		int y1 = row * size;        		
-        		NodeType nodeType = maze[row][col].getNodeType();
+        		int y1 = row * size; 
+        		NodeType nodeType = maze[row][col].getNodeType(); 
         		
-       		
+        		
+
         		if (zoomOut){
         			switch (nodeType) {
     				case PlayerNode:
@@ -113,7 +119,9 @@ public class GameView extends JPanel implements ActionListener{
     				}
         		}else{
         			nodeType = maze[currentRow - cellpadding + row][currentCol - cellpadding + col].getNodeType();
+        			
         		}
+        		
         		
         		switch (nodeType) {
 				case WallNode:
@@ -133,6 +141,7 @@ public class GameView extends JPanel implements ActionListener{
 					break;
 				case BlackSpider:
 					imageIndex = 6;
+					
 					break;
 				case BlueSpider:
 					imageIndex = 7;
@@ -166,9 +175,14 @@ public class GameView extends JPanel implements ActionListener{
 					g2.drawImage(sprites[imageIndex].getNext(), x1, y1, null);
 
 				} else {
-
-					g2.setColor(Color.LIGHT_GRAY);
-					g2.fillRect(x1, y1, size, size);
+					if (maze[row][col].isVisited() && !maze[row][col].isGoalNode()) {
+						g2.setColor(maze[row][col].getColor());
+						g2.fillRect(x1, y1, size, size);
+					}
+					else{
+						g2.setColor(Color.LIGHT_GRAY);
+						g2.fillRect(x1, y1, size, size);
+					}
 				}
         	}
         }
