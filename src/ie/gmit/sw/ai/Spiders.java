@@ -59,7 +59,8 @@ public class Spiders implements Runnable {
 			return col;
 		}
 		private void traverse() throws InterruptedException {
-			DepthLimitedDFSTraversator tr = new DepthLimitedDFSTraversator(200,this,nodeType);
+			//DepthLimitedDFSTraversator tr = new DepthLimitedDFSTraversator(200,this,nodeType);
+			RecursiveDFSTraversator tr = new RecursiveDFSTraversator(200, this, nodeType);
 			tr.traverse(maze, maze[this.getRow()][this.getCol()]);
 		}
 	public void run() {

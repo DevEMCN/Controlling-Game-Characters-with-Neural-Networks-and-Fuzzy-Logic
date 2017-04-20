@@ -130,6 +130,9 @@ public class GameView extends JPanel implements ActionListener{
 				case SwordNode:
 					imageIndex = 1;
 					break;
+				case HelpNode:
+					imageIndex = 2;
+					break;
 				case BombNode:
 					imageIndex = 3;
 					break;

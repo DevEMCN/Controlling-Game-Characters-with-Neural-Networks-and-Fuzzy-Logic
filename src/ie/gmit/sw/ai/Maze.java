@@ -25,6 +25,7 @@ public class Maze {
 		int featureNumber = 20;
 		addFeature(NodeType.SwordNode, NodeType.WallNode, featureNumber);
 		addFeature(NodeType.HelpNode, NodeType.WallNode, featureNumber);
+		addFeature(NodeType.HelpNode, NodeType.WallNode, featureNumber);
 		addFeature(NodeType.BombNode, NodeType.WallNode, featureNumber);
 		addFeature(NodeType.HydrogenBombNode, NodeType.WallNode, featureNumber);
 		addFeature(NodeType.BlackSpider, NodeType.WallNode, featureNumber); //6 is a Black Spider, 0 is a hedge

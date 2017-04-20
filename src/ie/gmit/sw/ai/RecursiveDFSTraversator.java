@@ -1,42 +1,46 @@
 package ie.gmit.sw.ai;
-public class DepthLimitedDFSTraversator implements Traversator{
+
+import ie.gmit.sw.ai.*;
+public class RecursiveDFSTraversator implements Traversator{
 	private Node[][] maze;
-	private int limit;
 	private boolean keepRunning = true;
 	private long time = System.currentTimeMillis();
 	private int visitCount = 0;
 	private Spiders goalNode;
 	private NodeType nodeType;
-	
-	public DepthLimitedDFSTraversator(int limit, Spiders goalNode, NodeType nodeType){
-		this.limit = limit;
+	public RecursiveDFSTraversator(int limit, Spiders goalNode, NodeType nodeType){
 		this.goalNode=goalNode;
 		this.nodeType=nodeType;
 	}
 	
 	public void traverse(Node[][] maze, Node node) throws InterruptedException {
-		this.maze = maze;
 		setParentsNull(maze);
-		dfs(node, 1);
+		this.maze = maze;
+		dfs(node);
 	}
 	
-	private void dfs(Node node, int depth) throws InterruptedException{
-		if (!keepRunning || depth > limit) return;
+	private void dfs(Node node) throws InterruptedException{
+		if (!keepRunning) return;
 		
 		node.setVisited(true);	
 		visitCount++;
 		
-		if (node.getNodeType() == NodeType.PlayerNode){
+		if (node.isGoalNode()){
 	        time = System.currentTimeMillis() - time; //Stop the clock
 	        TraversatorStats.printStats(node, time, visitCount);
 	        keepRunning = false;
 			return;
 		}
 		
+		try { //Simulate processing each expanded node
+			Thread.sleep(1);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		Node[] children = node.children(maze);
 		for (int i = 0; i < children.length; i++) {
-			if (children[i] != null && !children[i].isVisited()) {
-				
+			if (children[i] != null && !children[i].isVisited()){
 				if (node.getNodeType() == NodeType.WalkableNode|| node.getNodeType() == NodeType.PlayerNode) {
 					goalNode.updatePath(node.getRow(), node.getCol());
 					maze[node.getRow()][node.getCol()].setNodeType(nodeType);
@@ -47,7 +51,7 @@ public class DepthLimitedDFSTraversator implements Traversator{
 					maze[node.getRow() - 1][node.getCol() - 1].setNodeType(nodeType);
 				}
 				children[i].setParent(node);
-				dfs(children[i], depth + 1);
+				dfs(children[i]);
 			}
 		}
 	}
