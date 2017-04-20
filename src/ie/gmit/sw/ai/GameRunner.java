@@ -3,6 +3,8 @@ package ie.gmit.sw.ai;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.management.MemoryType;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,13 +21,13 @@ public class GameRunner implements KeyListener{
 	fuzzylogic fuzz = new fuzzylogic();
 	Node goal;
 	Maze m = null;
-	private NodeType test;
 	private Node player;
 	private static final int IMAGE_COUNT = 15;
-	ExecutorService ex = Executors.newCachedThreadPool();
 	Traversator playerPath;
 	JPanel panel;
-	JLabel lblHealth;
+	JLabel lblPHealth,lblWHealth;
+	NumberFormat formatter = new DecimalFormat("#0.00");     
+
 	
 	public GameRunner() throws Exception{
     	m = new Maze(MAZE_DIMENSION);
@@ -50,19 +52,23 @@ public class GameRunner implements KeyListener{
         f.setLocation(100,100);
         f.setVisible(true);
         placePlayer();
-        guiElementsInit(f);
+        Scores(f);
         endNode();
     	validatePath();
 	}
-	private void guiElementsInit(JFrame f) {
+	private void Scores(JFrame f) {
 		panel = new JPanel();
 		panel.setForeground(Color.GRAY);
 		panel.setBounds(650, 50, 491, 638);
 		f.getContentPane().add(panel);
 		panel.setLayout(null);
-		lblHealth = new JLabel("Players Health: "+ Double.toString(playerStrenght));
-		lblHealth.setBounds(160, 11, 491, 14);
-		panel.add(lblHealth);
+		lblPHealth = new JLabel("Players Health: "+ Double.toString(playerStrenght));
+		lblPHealth.setBounds(160, 10, 491, 14);
+		lblWHealth = new JLabel("Weapon Strenght: "+ Double.toString(Weaponstrength));
+		lblWHealth.setBounds(160, 50, 491, 14);
+		panel.add(lblPHealth);
+		panel.add(lblWHealth);
+		
 		panel.repaint();
 	
 	}
@@ -133,8 +139,6 @@ public class GameRunner implements KeyListener{
 	public void keyTyped(KeyEvent e) {} //Ignore
 	
 private boolean isValidMove(int row, int col) {
-		double Health=playerStrenght-=fuzz.damage;
-
 		if (row <= maze.length - 1 && col <= maze[row].length - 1 && maze[row][col].getNodeType() == NodeType.WalkableNode){
 			maze[row][col].setNodeType(NodeType.PlayerNode);
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
@@ -143,21 +147,23 @@ private boolean isValidMove(int row, int col) {
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BombNode){
 			maze[row][col].setNodeType(NodeType.WallNode);
 			Weaponstrength+=3;
+			lblWHealth.setText("Weapon Strenght: "+formatter.format(Weaponstrength));
 			return false;
 		} else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.HelpNode){
 			maze[row][col].setNodeType(NodeType.WallNode);
 			fuzz.NewPlayerHealth+=25;
-			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
 			return false;
 		} else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.HydrogenBombNode){
 			maze[row][col].setNodeType(NodeType.WallNode);
 			Weaponstrength+=5;
+			lblWHealth.setText("Weapon Strenght: "+formatter.format(Weaponstrength));
 			return false;
 		}  
 		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BlackSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);	
 			fuzz.fight(Weaponstrength,playerStrenght,30);
-			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
 			constantPathUpdate();
 			return true;
 		}
@@ -165,48 +171,49 @@ private boolean isValidMove(int row, int col) {
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
 			fuzz.fight(Weaponstrength,playerStrenght,27);
 			constantPathUpdate();
-			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
 			return true;
 		}
 		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BrownSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
 			fuzz.fight(Weaponstrength,playerStrenght,25);
-			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GreenSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
 			fuzz.fight(Weaponstrength,playerStrenght,22);
-			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GreySpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
 			fuzz.fight(Weaponstrength,playerStrenght,18);
-			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.OrangeSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
 			fuzz.fight(Weaponstrength,playerStrenght,15);
-			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.RedSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
 			fuzz.fight(Weaponstrength,playerStrenght,12);
-			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.YellowSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
-			fuzz.fight(Weaponstrength,playerStrenght,8);
-			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			fuzz.fight(Weaponstrength,playerStrenght,8);			
+			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.SwordNode){
 			maze[row][col].setNodeType(NodeType.WallNode);
 			Weaponstrength++;
+			lblWHealth.setText("Weapon Strenght: "+formatter.format(Weaponstrength));			
 			constantPathUpdate();
 			return false;
 		}  else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GoalNode){

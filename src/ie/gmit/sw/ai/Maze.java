@@ -23,11 +23,10 @@ public class Maze {
 		
 		
 		int featureNumber = 20;
-		addFeature(NodeType.SwordNode, NodeType.WallNode, featureNumber);
-		addFeature(NodeType.HelpNode, NodeType.WallNode, featureNumber);
-		addFeature(NodeType.HelpNode, NodeType.WallNode, featureNumber);
-		addFeature(NodeType.BombNode, NodeType.WallNode, featureNumber);
-		addFeature(NodeType.HydrogenBombNode, NodeType.WallNode, featureNumber);
+		addFeature(NodeType.SwordNode, NodeType.WallNode, featureNumber+50);
+		addFeature(NodeType.HelpNode, NodeType.WallNode, featureNumber+50);
+		addFeature(NodeType.BombNode, NodeType.WallNode, featureNumber+50);
+		addFeature(NodeType.HydrogenBombNode, NodeType.WallNode, featureNumber+50);
 		addFeature(NodeType.BlackSpider, NodeType.WallNode, featureNumber); //6 is a Black Spider, 0 is a hedge
 		addFeature(NodeType.BlueSpider, NodeType.WallNode, featureNumber); //7 is a Blue Spider, 0 is a hedge
 		addFeature(NodeType.BrownSpider, NodeType.WallNode, featureNumber); //8 is a Brown Spider, 0 is a hedge
@@ -39,7 +38,7 @@ public class Maze {
 		
 		
 	}
-	private void buildPath() {
+	private void buildPath() { 
 		for (int row = 0; row < maze.length; row++) {
 			for (int col = 0; col < maze[row].length; col++) {
 				if (col < maze[row].length - 1) {
