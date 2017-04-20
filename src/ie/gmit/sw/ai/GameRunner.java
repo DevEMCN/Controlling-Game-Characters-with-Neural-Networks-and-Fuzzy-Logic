@@ -2,63 +2,115 @@ package ie.gmit.sw.ai;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.management.MemoryType;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import ie.gmit.sw.ai.fuzzylogic;
 import javax.swing.*;
 public class GameRunner implements KeyListener{
 	private static final int MAZE_DIMENSION = 100;
-	private static final int IMAGE_COUNT = 15;
+	private Node[][] maze;
 	private GameView view;
-	private Maze model;
 	private int currentRow;
 	private int currentCol;
-	private int currentRowEndNode;
-	private int currentColEndNode;
+	private double Weaponstrength;
+	private double playerStrenght=100;
+	fuzzylogic fuzz = new fuzzylogic();
+	Node goal;
+	Maze m = null;
+	private NodeType test;
+	private Node player;
+	private static final int IMAGE_COUNT = 15;
+	ExecutorService ex = Executors.newCachedThreadPool();
+	Traversator playerPath;
+	JPanel panel;
+	JLabel lblHealth;
 	
 	public GameRunner() throws Exception{
-		model = new Maze(MAZE_DIMENSION);
-    	view = new GameView(model);
-    	
-    	Sprite[] sprites = getSprites();
+    	m = new Maze(MAZE_DIMENSION);
+		maze = m.getMaze();
+		view = new GameView(maze,player);
+		Sprite[] sprites = getSprites();
     	view.setSprites(sprites);
+    	view.setBounds(0, 0, 800, 800);
+
     	
-    	placePlayer();
-    	endNode();
-    	
+
     	Dimension d = new Dimension(GameView.DEFAULT_VIEW_SIZE, GameView.DEFAULT_VIEW_SIZE);
     	view.setPreferredSize(d);
     	view.setMinimumSize(d);
     	view.setMaximumSize(d);
-    	
     	JFrame f = new JFrame("GMIT - B.Sc. in Computing (Software Development)");
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.addKeyListener(this);
-        f.getContentPane().setLayout(new FlowLayout());
-        f.add(view);
-        f.setSize(1000,1000);
+        f.getContentPane().setLayout(null);
+		f.getContentPane().add(view);
+		f.setSize(1000, 1000);
         f.setLocation(100,100);
-        f.pack();
         f.setVisible(true);
+        placePlayer();
+        guiElementsInit(f);
+        endNode();
+    	validatePath();
 	}
+	private void guiElementsInit(JFrame f) {
+		panel = new JPanel();
+		panel.setForeground(Color.GRAY);
+		panel.setBounds(650, 50, 491, 638);
+		f.getContentPane().add(panel);
+		panel.setLayout(null);
+		lblHealth = new JLabel("Players Health: "+ Double.toString(playerStrenght));
+		lblHealth.setBounds(160, 11, 491, 14);
+		panel.add(lblHealth);
+		panel.repaint();
 	
-	private void placePlayer(){   	
-    	currentRow = (int) (MAZE_DIMENSION * Math.random());
-    	currentCol = (int) (MAZE_DIMENSION * Math.random());
-    	model.set(currentRow, currentCol, '5'); //A Spartan warrior is at index 5
-    	
-    	updateView(); 		
+	}
+	private void placePlayer(){
+		m.setPlayer();
+		player = m.getPlayer();
+		currentRow = player.getRow();
+		currentCol = player.getCol();
+    	maze[currentRow][currentCol].setNodeType(NodeType.PlayerNode);
+    	updateView();
+    		
+	}
+	private void constantPathUpdate() {
+		goal = m.getGoal();
+		AStarTraversator update = new AStarTraversator(goal);
+		update.traverse(maze, maze[currentRow][currentCol]);
+
 	}
 	private void endNode(){   	
-		currentRowEndNode = (int) (MAZE_DIMENSION * Math.random());
-		currentColEndNode = (int) (MAZE_DIMENSION * Math.random());
-    	model.set(currentRowEndNode, currentColEndNode, '>'); 
-    	System.out.println("this is End current row:" +currentRowEndNode+"this is Enddcurrent column"+currentColEndNode);
+		this.goal = m.getGoal();
+		this.goal.setGoalNode(true);
 	}
 	
+	private void validatePath() throws InterruptedException {
+		int checker = (int) TraversatorStats.depth;
+		if (checker == 0) {
+			goal.setNodeType(NodeType.WalkableNode);
+		}
+		while (checker < 20) {
+			m.setGoal();
+			goal.setNodeType(NodeType.WalkableNode);
+			goal = m.getGoal();
+			System.out.println("recalculating the path...");
+			Traversator playerPath = new AStarTraversator(goal);
+			playerPath.traverse(maze, maze[player.getRow()][player.getCol()]);
+			System.out.println("finished calculating...");
+			checker = (int) TraversatorStats.depth;
+			if (checker > 20) {
+				break;
+			}
+		}
+	}
 	
 	private void updateView(){
 		view.setCurrentRow(currentRow);
 		view.setCurrentCol(currentCol);
-		System.out.println("this is current row:" +currentRow+"this is current column"+currentCol);
 	}
+	
 
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_RIGHT && currentCol < MAZE_DIMENSION - 1) {
@@ -79,19 +131,92 @@ public class GameRunner implements KeyListener{
     }
     public void keyReleased(KeyEvent e) {} //Ignore
 	public void keyTyped(KeyEvent e) {} //Ignore
+	
+private boolean isValidMove(int row, int col) {
+		double Health=playerStrenght-=fuzz.damage;
 
-    
-	private boolean isValidMove(int row, int col){
-		if (row <= model.size() - 1 && col <= model.size() - 1 && model.get(row, col) == ' '){
-			model.set(currentRow, currentCol, '\u0020');
-			model.set(row, col, '5');
+		if (row <= maze.length - 1 && col <= maze[row].length - 1 && maze[row][col].getNodeType() == NodeType.WalkableNode){
+			maze[row][col].setNodeType(NodeType.PlayerNode);
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+			constantPathUpdate();
 			return true;
-		}else{
-			return false; //Can't move
+		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BombNode){
+			maze[row][col].setNodeType(NodeType.WallNode);
+			Weaponstrength+=3;
+			return false;
+		} else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.HelpNode){
+			maze[row][col].setNodeType(NodeType.WallNode);
+			fuzz.NewPlayerHealth+=25;
+			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			return false;
+		} else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.HydrogenBombNode){
+			maze[row][col].setNodeType(NodeType.WallNode);
+			Weaponstrength+=5;
+			return false;
+		}  
+		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BlackSpider){
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);	
+			fuzz.fight(Weaponstrength,playerStrenght,30);
+			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			constantPathUpdate();
+			return true;
+		}
+		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BlueSpider){
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+			fuzz.fight(Weaponstrength,playerStrenght,27);
+			constantPathUpdate();
+			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			return true;
+		}
+		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BrownSpider){
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+			fuzz.fight(Weaponstrength,playerStrenght,25);
+			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			constantPathUpdate();
+			return true;
+		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GreenSpider){
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+			fuzz.fight(Weaponstrength,playerStrenght,22);
+			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			constantPathUpdate();
+			return true;
+		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GreySpider){
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+			fuzz.fight(Weaponstrength,playerStrenght,18);
+			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			constantPathUpdate();
+			return true;
+		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.OrangeSpider){
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+			fuzz.fight(Weaponstrength,playerStrenght,15);
+			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			constantPathUpdate();
+			return true;
+		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.RedSpider){
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+			fuzz.fight(Weaponstrength,playerStrenght,12);
+			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			constantPathUpdate();
+			return true;
+		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.YellowSpider){
+			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
+			fuzz.fight(Weaponstrength,playerStrenght,8);
+			lblHealth.setText("Player Health: "+Double.toString(fuzz.NewPlayerHealth));
+			constantPathUpdate();
+			return true;
+		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.SwordNode){
+			maze[row][col].setNodeType(NodeType.WallNode);
+			Weaponstrength++;
+			constantPathUpdate();
+			return false;
+		}  else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GoalNode){
+			System.exit(0);
+			return true;
+		}else {
+			return false; 
 		}
 	}
-	
-	private Sprite[] getSprites() throws Exception{
+	private Sprite[] getSprites() throws Exception{	
 		//Read in the images from the resources directory as sprites. Note that each
 		//sprite will be referenced by its index in the array, e.g. a 3 implies a Bomb...
 		//Ideally, the array should dynamically created from the images... 
@@ -113,6 +238,7 @@ public class GameRunner implements KeyListener{
 		sprites[14] = new Sprite("End Game", "resources/EndGame.png");
 		return sprites;
 	}
+	
 	
 	public static void main(String[] args) throws Exception{
 		new GameRunner();

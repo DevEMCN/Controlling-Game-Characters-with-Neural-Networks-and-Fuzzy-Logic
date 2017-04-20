@@ -2,8 +2,8 @@ FUNCTION_BLOCK gameLogic
 
 	VAR_INPUT 
 			weapon : REAL; 		// player's weapon
-			playerLife : REAL;	// player's life
-			enemyLife : REAL;   // enemies life
+			spider : REAL;	// player's life
+			damage : REAL;   // enemies life
 	END_VAR
 	
 	VAR_OUTPUT 
@@ -11,26 +11,20 @@ FUNCTION_BLOCK gameLogic
 	END_VAR
 	
 	FUZZIFY weapon
-			TERM hydrogenBomb := (60, 0) (100, 1);
-			TERM bomb := trian 30 50 70;
-			TERM sword := (0, 1) (40, 0);
+			TERM high := (13, 0) (20, 1);
+			TERM mid := trian 5 10 15;
+			TERM low := (0, 1) (5, 0);
 	END_FUZZIFY
 	
-	FUZZIFY playerLife
-			TERM low := (0, 1) (20, 1) (40, 0);
-			TERM mid := trian 40 60 70;
-			TERM high := (60, 0) (80, 1) (100, 1);
+	FUZZIFY spider
+			TERM low := (0, 1) (5, 1) (10, 0);
+			TERM mid := trian 8 15 18;
+			TERM high := (16, 0) (25, 1) (30, 1);
 	END_FUZZIFY
 	
-	FUZZIFY enemyLife
-			TERM low := (0, 1) (20, 1) (40, 0);
-			TERM mid := trian 40 60 70;
-			TERM high := (60, 0) (80, 1) (100, 1);
-	END_FUZZIFY
-	
-	DEFUZZIFY kill
+	DEFUZZIFY damage
 			TERM low := (0, 1) (45, 0);
-			TERM normal := trian 40.0 70.0 80.0; 
+			TERM mid := trian 40.0 70.0 80.0; 
 			TERM high := (60, 0) (100, 1); 
 			METHOD : COG;
 			DEFAULT := 0;
@@ -40,10 +34,9 @@ FUNCTION_BLOCK gameLogic
 			AND : MIN;
 			ACT : MIN;
 			ACCU : MAX;
-			RULE 1 : IF weapon IS hydrogenBomb THEN kill IS high;
-			RULE 2 : IF weapon IS bomb OR playerLife IS NOT low THEN kill IS normal;
-			RULE 3 : IF weapon IS sword OR playerLife IS high THEN kill IS low;
-			RULE 4 : IF weapon IS NOT hydrogenBomb AND playerLife IS low THEN kill IS low;
+			RULE 1 : IF weapon IS high THEN damage IS low;
+			RULE 2 : IF weapon IS mid OR spider IS NOT low THEN damage IS mid;
+			RULE 3 : IF weapon IS low OR spider IS high THEN damage IS high;
 	END_RULEBLOCK
 
 END_FUNCTION_BLOCK

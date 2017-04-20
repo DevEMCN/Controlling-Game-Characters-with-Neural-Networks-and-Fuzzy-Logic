@@ -1,48 +1,94 @@
 package ie.gmit.sw.ai;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-
+import ie.gmit.sw.ai.Node;
+import ie.gmit.sw.ai.NodeType;
 public class Maze {
-	private char[][] maze;
-	public Maze(int dimension){
-		maze = new char[dimension][dimension];
+	private int dimension = 100;
+	private Node[][] maze = new Node[dimension][dimension];
+	private Node player;
+	private Node goal;
+	private int col, row ;
+	ExecutorService ex = Executors.newCachedThreadPool();
+	
+
+	public Maze(int dimension) throws InterruptedException{
+		maze = new Node[dimension][dimension];
 		init();
 		buildMaze();
+		setGoal();
+		buildPath();
 		
-		int featureNumber = (int)((dimension * dimension) * 0.01);
-		addFeature('\u0031', '0', featureNumber); //1 is a sword, 0 is a hedge
-		addFeature('\u0032', '0', featureNumber); //2 is help, 0 is a hedge
-		addFeature('\u0033', '0', featureNumber); //3 is a bomb, 0 is a hedge
-		addFeature('\u0034', '0', featureNumber); //4 is a hydrogen bomb, 0 is a hedge
+		
+		int featureNumber = 20;
+		addFeature(NodeType.SwordNode, NodeType.WallNode, featureNumber);
+		addFeature(NodeType.HelpNode, NodeType.WallNode, featureNumber);
+		addFeature(NodeType.HelpNode, NodeType.WallNode, featureNumber);
+		addFeature(NodeType.BombNode, NodeType.WallNode, featureNumber);
+		addFeature(NodeType.HydrogenBombNode, NodeType.WallNode, featureNumber);
+		addFeature(NodeType.BlackSpider, NodeType.WallNode, featureNumber); //6 is a Black Spider, 0 is a hedge
+		addFeature(NodeType.BlueSpider, NodeType.WallNode, featureNumber); //7 is a Blue Spider, 0 is a hedge
+		addFeature(NodeType.BrownSpider, NodeType.WallNode, featureNumber); //8 is a Brown Spider, 0 is a hedge
+		addFeature(NodeType.GreenSpider, NodeType.WallNode, featureNumber); //9 is a Green Spider, 0 is a hedge
+		addFeature(NodeType.GreySpider, NodeType.WallNode, featureNumber); //: is a Grey Spider, 0 is a hedge
+		addFeature(NodeType.OrangeSpider, NodeType.WallNode, featureNumber); //; is a Orange Spider, 0 is a hedge
+		addFeature(NodeType.RedSpider, NodeType.WallNode, featureNumber); //< is a Red Spider, 0 is a hedge
+		addFeature(NodeType.YellowSpider, NodeType.WallNode, featureNumber); //= is a Yellow Spider, 0 is a hedge
+		
+		
+	}
+	private void buildPath() {
+		for (int row = 0; row < maze.length; row++) {
+			for (int col = 0; col < maze[row].length; col++) {
+				if (col < maze[row].length - 1) {
+					if (maze[row][col + 1].getNodeType() == NodeType.WalkableNode) {
+						maze[row][col].addPath(Node.Direction.West);
+					}
+				}
+				if (col > 0) {
+					if (maze[row][col - 1].getNodeType() == NodeType.WalkableNode) {
+						maze[row][col].addPath(Node.Direction.East);
+					}
+				}
+				if (row < maze.length - 1) {
+					if (maze[row + 1][col].getNodeType() == NodeType.WalkableNode) {
+						maze[row][col].addPath(Node.Direction.North);
+					}
+				}
+				if (row > 0) {
+					if (maze[row - 1][col].getNodeType() == NodeType.WalkableNode) {
+						maze[row][col].addPath(Node.Direction.South);
+					}
+				}
+			}
+		}
 
-		featureNumber = (int)((dimension * dimension) * 0.01);
-		addFeature('\u0036', '0', featureNumber); //6 is a Black Spider, 0 is a hedge
-		addFeature('\u0037', '0', featureNumber); //7 is a Blue Spider, 0 is a hedge
-		addFeature('\u0038', '0', featureNumber); //8 is a Brown Spider, 0 is a hedge
-		addFeature('\u0039', '0', featureNumber); //9 is a Green Spider, 0 is a hedge
-		addFeature('\u003A', '0', featureNumber); //: is a Grey Spider, 0 is a hedge
-		addFeature('\u003B', '0', featureNumber); //; is a Orange Spider, 0 is a hedge
-		addFeature('\u003C', '0', featureNumber); //< is a Red Spider, 0 is a hedge
-		addFeature('\u003D', '0', featureNumber); //= is a Yellow Spider, 0 is a hedge
-		
-		
 	}
 	
 	private void init(){
 		for (int row = 0; row < maze.length; row++){
 			for (int col = 0; col < maze[row].length; col++){
-				maze[row][col] = '0'; //Index 0 is a hedge...
+				maze[row][col] = new Node(row, col);
+				maze[row][col].setNodeType(NodeType.WallNode);
 			}
 		}
 	}
 	
-	private void addFeature(char feature, char replace, int number){
+	private void addFeature(NodeType feature, NodeType replace, int number) throws InterruptedException{
 		int counter = 0;
-		while (counter < feature){
+		while (counter < number){
 			int row = (int) (maze.length * Math.random());
 			int col = (int) (maze[0].length * Math.random());
 			
-			if (maze[row][col] == replace){
-				maze[row][col] = feature;
+			if (maze[row][col].nodeType == replace){
+				maze[row][col].nodeType = feature;
+				if(feature==NodeType.BlackSpider || feature==NodeType.BlueSpider || feature==NodeType.BrownSpider
+						|| feature==NodeType.OrangeSpider || feature==NodeType.GreySpider || feature==NodeType.GreenSpider
+						|| feature==NodeType.RedSpider || feature==NodeType.YellowSpider){
+				ex.execute(new Spiders(maze, player,feature));
+				}
 				counter++;
 			}
 		}
@@ -53,28 +99,55 @@ public class Maze {
 			for (int col = 1; col < maze[row].length - 1; col++){
 				int num = (int) (Math.random() * 10);
 				if (num > 5 && col + 1 < maze[row].length - 1){
-					maze[row][col + 1] = '\u0020'; //\u0020 = 0x20 = 32 (base 10) = SPACE
+					maze[row][col + 1].nodeType = NodeType.WalkableNode;
+					continue;
 				}else{
-					if (row + 1 < maze.length - 1)maze[row + 1][col] = '\u0020';
+					maze[row + 1][col].nodeType = NodeType.WalkableNode;
 				}
 			}
 		}		
 	}
 	
-	public char[][] getMaze(){
+	public Node[][] getMaze(){
 		return this.maze;
-	}
-	
-	public char get(int row, int col){
-		return this.maze[row][col];
-	}
-	
-	public void set(int row, int col, char c){
-		this.maze[row][col] = c;
 	}
 	
 	public int size(){
 		return this.maze.length;
+	}
+	public Node getPlayer() {
+		return player;
+	}
+	
+	
+	public void setPlayer() {
+		int currentRow = (int) ((dimension-20) * Math.random());
+		int currentCol = (int) ((dimension-20) * Math.random());
+		
+		while(maze[currentRow][currentCol].getNodeType()!=NodeType.WalkableNode){
+			 currentRow = (int) ((dimension-20) * Math.random());
+			 currentCol = (int) ((dimension-20) * Math.random());
+		}
+		maze[currentRow][currentCol].setNodeType(NodeType.PlayerNode);
+		player = maze[currentRow][currentCol];
+	}
+	public void setGoal() {
+		Random ran = new Random();
+		for (int i = 0; i < 1; i++) {
+			int currentRow = ran.nextInt(dimension-10) + 10;
+			int currentCol = ran.nextInt(dimension-10) + 10;
+			while(maze[currentRow][currentCol].getNodeType()!=NodeType.WalkableNode || 
+					maze[currentRow][currentCol].getNodeType()==NodeType.PlayerNode){
+				 currentRow = ran.nextInt(dimension-10) + 10;
+				 currentCol = ran.nextInt(dimension-10) + 10;
+			}
+			this.getMaze()[currentRow][currentCol].setNodeType(NodeType.GoalNode);
+			goal = this.getMaze()[currentRow][currentCol];
+		}
+	}
+
+	public Node getGoal() {
+		return goal;
 	}
 	
 	public String toString(){
