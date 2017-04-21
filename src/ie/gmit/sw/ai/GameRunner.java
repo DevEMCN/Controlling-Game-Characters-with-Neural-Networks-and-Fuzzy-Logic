@@ -163,7 +163,7 @@ private boolean isValidMove(int row, int col) {
 		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BlackSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);	
 			fuzz.fight(Weaponstrength,playerStrenght,30);
-			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
+			getScore();
 			constantPathUpdate();
 			return true;
 		}
@@ -171,43 +171,43 @@ private boolean isValidMove(int row, int col) {
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
 			fuzz.fight(Weaponstrength,playerStrenght,27);
 			constantPathUpdate();
-			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
+			getScore();
 			return true;
 		}
 		else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.BrownSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
 			fuzz.fight(Weaponstrength,playerStrenght,25);
-			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
+			getScore();
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GreenSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
 			fuzz.fight(Weaponstrength,playerStrenght,22);
-			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
+			getScore();
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.GreySpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
 			fuzz.fight(Weaponstrength,playerStrenght,18);
-			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
+			getScore();
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.OrangeSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
 			fuzz.fight(Weaponstrength,playerStrenght,15);
-			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
+			getScore();
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.RedSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
 			fuzz.fight(Weaponstrength,playerStrenght,12);
-			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
+			getScore();
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.YellowSpider){
 			maze[currentRow][currentCol].setNodeType(NodeType.WalkableNode);
-			fuzz.fight(Weaponstrength,playerStrenght,8);			
-			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
+			fuzz.fight(Weaponstrength,playerStrenght,8);
+			getScore();
 			constantPathUpdate();
 			return true;
 		}else if (row <= maze.length - 1 && col <= maze[row].length - 1 && (maze[row][col].getNodeType() == NodeType.WalkableNode)|| maze[row][col].getNodeType() == NodeType.SwordNode){
@@ -221,6 +221,18 @@ private boolean isValidMove(int row, int col) {
 			return true;
 		}else {
 			return false; 
+		}
+	}
+	private void getScore(){
+		if(Weaponstrength>0){
+		Weaponstrength=Weaponstrength-fuzz.weaponDamage;
+		lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
+		lblWHealth.setText("Weapon Strenght: "+formatter.format(Weaponstrength));	
+		}
+		else{
+			Weaponstrength=0;
+			lblPHealth.setText("Player Strenght: "+formatter.format(fuzz.NewPlayerHealth));
+			lblWHealth.setText("Weapon Strenght: "+formatter.format(Weaponstrength));	
 		}
 	}
 	private Sprite[] getSprites() throws Exception{	

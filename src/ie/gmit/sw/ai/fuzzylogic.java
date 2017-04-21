@@ -3,7 +3,7 @@ package ie.gmit.sw.ai;
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
 public class fuzzylogic {
-	double NewPlayerHealth=100 ,damage;
+	double NewPlayerHealth=100 ,damage,weaponDamage;
 	public double fight(double weaponStrenght, double playerHealth, double spiderStrenght ){  	   
        
     	System.out.println(spiderStrenght);
@@ -20,18 +20,12 @@ public class fuzzylogic {
         // Evaluate
         fis.evaluate();
         damage = fis.getVariable("damage").getValue();
-        System.out.println("Dame: "+damage);
-        
+        weaponDamage=fis.getVariable("weaponDamage").getValue();
+        System.out.println("ws: "+weaponDamage);
         NewPlayerHealth=NewPlayerHealth-damage;
         if(NewPlayerHealth<0){
         	NewPlayerHealth=0;
-        }System.out.println("new Player Health: " + NewPlayerHealth);
+        }
 		return 0;
        } 
-	
-
-    public double getNewPlayerHealth() {
-		return NewPlayerHealth;
-	}
-
 }
